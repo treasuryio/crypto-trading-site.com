@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoX - Professional Demo Trading Platform</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .crypto-up { color: #00ff88; animation: flash-green 0.5s ease; }
+        .crypto-down { color: #ff3366; animation: flash-red 0.5s ease; }
+        @keyframes flash-green { 0% { background-color: rgba(0, 255, 136, 0.2); } 100% { background-color: transparent; } }
+        @keyframes flash-red { 0% { background-color: rgba(255, 51, 102, 0.2); } 100% { background-color: transparent; } }
+    </style>
+</head>
+<body class="bg-[#0b0e11] text-gray-200 font-sans">
+
+    <!-- Navbar / Menu -->
+    <nav class="bg-[#181a20] border-b border-gray-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center space-x-8">
+            <div class="text-2xl font-bold text-yellow-500 tracking-wider">CryptoX</div>
+            <div class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#" class="text-white hover:text-yellow-500 transition">Market</a>
+                <a href="#" class="hover:text-yellow-500 transition">Trade</a>
+                <a href="#" class="hover:text-yellow-500 transition">Wallet</a>
+            </div>
+        </div>
+        <!-- Dynamic Auth Buttons Container -->
+        <div id="auth-buttons" class="flex items-center space-x-4">
+            <!-- Buttons will change dynamically via JavaScript -->
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <div class="max-w-7xl mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Balance Dashboard -->
+            <div class="bg-[#181a20] p-6 rounded-xl border border-gray-800">
+                <h2 id="welcome-text" class="text-gray-400 text-sm font-medium uppercase tracking-wider">Estimated Balance</h2>
+                <div class="text-3xl font-bold text-white mt-1">$14,250.75 <span class="text-sm text-green-500 font-normal">+2.4% (24h)</span></div>
+                
+                <div class="mt-6 flex space-x-4">
+                    <button onclick="checkAuthAction('Deposit')" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-green-900/20">↓ Deposit Fund</button>
+                    <button onclick="checkAuthAction('Withdraw')" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-lg border border-gray-700 transition">↑ Withdraw Fund</button>
+                </div>
+            </div>
+
+            <!-- Live Market Table (Binance Live Data via WebSocket) -->
+            <div class="bg-[#181a20] p-6 rounded-xl border border-gray-800">
+                <h3 class="text-lg font-bold text-white mb-4">Live Markets (Binance)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-gray-400 text-sm">
+                                <th class="pb-3">Asset</th>
+                                <th class="pb-3">Live Price</th>
+                                <th class="pb-3">24h Change</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800/50 text-sm">
+                            <tr>
+                                <td class="py-4 font-semibold text-white">Bitcoin <span class="text-gray-500 text-xs">BTC/USDT</span></td>
+                                <td id="btc-price" class="py-4 font-mono font-bold text-white">$64,500.00</td>
+                                <td id="btc-change" class="py-4 text-green-500 font-medium">+0.00%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-4 font-semibold text-white">Ethereum <span class="text-gray-500 text-xs">ETH/USDT</span></td>
+                                <td id="eth-price" class="py-4 font-mono font-bold text-white">$3,450.00</td>
+                                <td id="eth-change" class="py-4 text-green-500 font-medium">+0.00%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Panel: Order & Customer Support -->
+        <div class="space-y-6">
+            <!-- Simulated Place Order Panel -->
+            <div class="bg-[#181a20] p-6 rounded-xl border border-gray-800">
+                <h3 class="text-lg font-bold text-white mb-4">Place Order</h3>
+                <div class="flex space-x-2 mb-4 bg-[#0b0e11] p-1 rounded-lg">
+                    <button class="flex-1 py-2 text-center bg-green-600 text-white font-bold rounded-md text-sm">Buy</button>
+                    <button class="flex-1 py-2 text-center text-gray-400 hover:text-white font-bold text-sm">Sell</button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Price (USDT)</label>
+                        <input type="number" id="order-price" value="64500" class="w-full bg-[#0b0e11] border border-gray-800 rounded p-2 text-white font-mono focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Amount (BTC)</label>
+                        <input type="number" placeholder="0.00" class="w-full bg-[#0b0e11] border border-gray-800 rounded p-2 text-white font-mono focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <button onclick="alert('Order submitted to the simulated matching engine!')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition mt-2">
+                        Execute Buy Order
+                    </button>
+                </div>
+            </div>
+
+            <!-- Customer Support with Telegram Integration -->
+            <div class="bg-gradient-to-br from-yellow-600/20 to-yellow-900/10 p-6 rounded-xl border border-yellow-600/30 text-center">
+                <h4 class="text-yellow-500 font-bold mb-1">Need Support?</h4>
+                <p class="text-xs text-gray-400 mb-4">Our dedicated team is available 24/7 to assist you via Telegram.</p>
+                
+                <!-- Telegram Customer Service Button -->
+                <a href="https://t.me" target="_blank" class="w-full bg-[#24A1DE] hover:bg-[#1d82b5] text-white font-bold py-2.5 rounded-lg text-sm transition flex items-center justify-center space-x-2">
+                    <!-- SVG Telegram Logo -->
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://w3.org">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.961 4.284-1.356 5.992-.167.723-.424.965-.672.987-.54.05-1.077-.282-1.6-.624-.818-.536-1.282-.867-2.076-1.391-.918-.607-.323-.94.2-1.48.137-.142 2.525-2.316 2.571-2.513.006-.024.01-.115-.044-.162-.053-.047-.132-.031-.189-.018-.08.018-1.36.862-3.834 2.531-.362.249-.691.371-.986.364-.326-.007-.953-.184-1.419-.336-.572-.187-1.026-.285-1.016-.653.016-.192.28-.388.79-.588 3.08-1.342 5.134-2.228 6.16-2.658 2.934-1.229 3.543-1.442 3.94-.143.088.067.285.672.136 1.636z"/>
+                    </svg>
+                    <span>Chat with Customer Service</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log In Modal -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-[#181a20] border border-gray-800 p-8 rounded-xl w-full max-w-md relative">
+            <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+            <h2 class="text-2xl font-bold text-white mb-6">Log In to CryptoX</h2>
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="email" id="login-email" placeholder="Email Address" required class="w-full bg-[#0b0e11] border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500">
+                <input type="password" id="login-password" placeholder="Password" required class="w-full bg-[#0b0e11] border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500">
+                <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-lg transition">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-[#181a20] border border-gray-800 p-8 rounded-xl w-full max-w-md relative">
+            <button onclick="closeModal('register-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+            <h2 class="text-2xl font-bold text-white mb-6">Create Account</h2>
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4">
+                <input type="email" id="register-email" placeholder="Email Address" required class="w-full bg-[#0b0e11] border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500">
+                <input type="password" id="register-password" placeholder="Create Password" required class="w-full bg-[#0b0e11] border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal UI Controls
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // LocalStorage Auth System
+        let currentUser = localStorage.getItem('loggedInUser') || null;
+
+        function updateUIState() {
+            const authButtons = document.getElementById('auth-buttons');
+            const welcomeText = document.getElementById('welcome-text');
+            
+            if (currentUser) {
+                welcomeText.innerText = `Wallet Dashboard (${currentUser})`;
+                authButtons.innerHTML = `<button onclick="handleLogout()" class="text-sm font-medium bg-red-600 px-4 py-2 rounded text-white hover:bg-red-700 transition">Log Out</button>`;
+            } else {
+                welcomeText.innerText = "Estimated Balance";
+                authButtons.innerHTML = `
+                    <button onclick="openModal('login-modal')" class="text-sm font-medium hover:text-yellow-500 transition">Log In</button>
+                    <button onclick="openModal('register-modal')" class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-sm px-4 py-2 rounded transition">Register</button>
+                `;
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            // Save credentials to localStorage
+            localStorage.setItem(`user_${email}`, password);
+            alert("Registration Successful! Please log in now.");
+            closeModal('register-modal');
+            openModal('login-modal');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const savedPassword = localStorage.getItem(`user_${email}`);
+
+            if (savedPassword && savedPassword === password) {
+                alert("Login Successful!");
+                currentUser = email;
+                localStorage.setItem('loggedInUser', email);
+                closeModal('login-modal');
+                updateUIState();
+            } else {
+                alert("Invalid email or password!");
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('loggedInUser');
+            alert("Logged out successfully.");
+            updateUIState();
+        }
+
+        function checkAuthAction(action) {
+            if (!currentUser) {
+                alert(`Please Login first to access the ${action} gateway!`);
+                openModal('login-modal');
+            } else {
+                alert(`${action} System Opened for ${currentUser}`);
+            }
+        }
+
+        // Initialize state on page load
+        updateUIState();
+
+        // Connect to Binance Live WebSocket API for BTC & ETH
+        const wsUrl = "wss://://binance.com";
+        const ws = new WebSocket(wsUrl);
+
+        let lastBtcPrice = 0;
+        let lastEthPrice = 0;
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            // Handle Bitcoin Update
+            if (data.s === "BTCUSDT") {
+                const currentPrice = parseFloat(data.c);
+                const btcElem = document.getElementById("btc-price");
+                btcElem.innerText = `$${currentPrice.toFixed(2)}`;
+                
+                if (currentPrice > lastBtcPrice) { btcElem.className = "py-4 font-mono font-bold crypto-up"; } 
+                else if (currentPrice < lastBtcPrice) { btcElem.className = "py-4 font-mono font-bold crypto-down"; }
+                lastBtcPrice = currentPrice;
+
+                document.getElementById("btc-change").innerText = `${parseFloat(data.P).toFixed(2)}%`;
+                document.getElementById("btc-change").className = data.P >= 0 ? "py-4 text-green-500 font-medium" : "py-4 text-red-500 font-medium";
+                
+                // Update Order Panel default price dynamically
+                document.getElementById("order-price").value = Math.round(currentPrice);
+            }
+
+            // Handle Ethereum Update
+            if (data.s === "ETHUSDT") {
+                const currentPrice = parseFloat(data.c);
+                const ethElem = document.getElementById("eth-price");
+                ethElem.innerText = `$${currentPrice.toFixed(2)}`;
+                
+                if (currentPrice > lastEthPrice) { ethElem.className = "py-4 font-mono font-bold crypto-up"; } 
+                else if (currentPrice < lastEthPrice) { ethElem.className = "py-4 font-mono font-bold crypto-down"; }
+                lastEthPrice = currentPrice;
+
+                document.getElementById("eth-change").innerText = `${parseFloat(data.P).toFixed(2)}%`;
+                document.getElementById("eth-change").className = data.P >= 0 ? "py-4 text-green-500 font-medium" : "py-4 text-red-500 font-medium";
+            }
+        };
+
+        ws.onerror = (err) => { console.error("WebSocket Error: ", err); };
+    </script>
+</body>
+</html>
